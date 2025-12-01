@@ -1,0 +1,28 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+
+<views:MauiLoadingPage
+    x:Class="mauikit.navigation.sample.Features.Main.MainPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:localizations="clr-namespace:mauikit.navigation.core.Localizations;assembly=mauikit.navigation.core"
+    xmlns:views="clr-namespace:mauikit.navigation.core.Views;assembly=mauikit.navigation.core"
+    xmlns:main="clr-namespace:mauikit.navigation.sample.Features.Main"
+    Title="Sample"
+    x:DataType="main:MainViewModel">
+
+    <VerticalStackLayout
+        Margin="10"
+        Spacing="10"
+        VerticalOptions="Center">
+        <VerticalStackLayout Margin="0,20" Spacing="2">
+            <Label Text="{localizations:Translate LabelKey}" />
+            <Label Text="{localizations:Translate LabelOtherKey, StringFormat='{0} - ExtraInfo'}" />
+            <Button Text="{localizations:Translate ChangeLanguage}" Command="{Binding ChangeLanguageCommand}"></Button>
+        </VerticalStackLayout>
+        <Button Command="{Binding OpenPopupCommand}" Text="{localizations:Translate OpenPopup}" />
+        <Button Command="{Binding OpenPopupWithReturnCommand}" Text="{localizations:Translate OpenPopupWithReturn}" />
+        <Button Command="{Binding OpenPageCommand}" Text="{localizations:Translate NavigateToSimplePage}" />
+        <Button Command="{Binding OpenModalPageCommand}" Text="{localizations:Translate NavigateToModalPage}" />
+    </VerticalStackLayout>
+
+</views:MauiLoadingPage>

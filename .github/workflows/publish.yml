@@ -8,10 +8,10 @@ on:
   workflow_dispatch:
     inputs:
       should-push-packages:
-      description: 'either push package on nuget.ord feed or not'
-      required: true
-      default: false
-      type: boolean
+        description: 'either push package on nuget.ord feed or not'
+        required: true
+        default: false
+        type: boolean
 
 env:
   NET_VERSION: '10.0.x'
@@ -163,7 +163,7 @@ jobs:
           retention-days: 30
       
       - name: Push to GitHub Packages
-        if: ${{ github.event.inputs.environment == true && github.event_name != 'pull_request' }}
+        if: ${{ github.event.inputs.should-push-packages == true && github.event_name != 'pull_request' }}
         run: |
           dotnet nuget push "${{ github.workspace }}/nupkg/*.nupkg" `
             --source "https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json" `

@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "mauikit.navigation.core", "mauikit.navigation.core\mauikit.navigation.core.csproj", "{2F3C814C-BEEB-470F-8548-D4407FF40D6D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "mauikit.navigation.core.tests", "mauikit.navigation.core.tests\mauikit.navigation.core.tests.csproj", "{D90D3ECF-19DF-4FB0-8D39-D2ABDFD76F81}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "mauikit.navigation.sample", "mauikit.navigation.sample\mauikit.navigation.sample.csproj", "{6C8D010E-822B-4149-9F5C-1B7CF97BFF0E}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{2F3C814C-BEEB-470F-8548-D4407FF40D6D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2F3C814C-BEEB-470F-8548-D4407FF40D6D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2F3C814C-BEEB-470F-8548-D4407FF40D6D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2F3C814C-BEEB-470F-8548-D4407FF40D6D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D90D3ECF-19DF-4FB0-8D39-D2ABDFD76F81}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D90D3ECF-19DF-4FB0-8D39-D2ABDFD76F81}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D90D3ECF-19DF-4FB0-8D39-D2ABDFD76F81}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D90D3ECF-19DF-4FB0-8D39-D2ABDFD76F81}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6C8D010E-822B-4149-9F5C-1B7CF97BFF0E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6C8D010E-822B-4149-9F5C-1B7CF97BFF0E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6C8D010E-822B-4149-9F5C-1B7CF97BFF0E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6C8D010E-822B-4149-9F5C-1B7CF97BFF0E}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal

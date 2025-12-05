@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<views:MauiLoadingPopup
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:views="clr-namespace:mauikit.navigation.core.Views;assembly=mauikit.navigation.core"
+    xmlns:main="clr-namespace:mauikit.navigation.sample.Features.Main"
+    xmlns:main1="clr-namespace:mauikit.navigation.sample.Features.Main"
+    x:Class="mauikit.navigation.sample.Features.Main.SamplePopupPage"
+    x:DataType="main1:SamplePopupViewModel"
+    BackgroundColor="White"
+    LoaderColor="Blue"
+    HeightRequest="500"
+    WidthRequest="300">
+
+    <Grid>
+
+        <VerticalStackLayout
+            Spacing="10"
+            Margin="10"
+            VerticalOptions="Center">
+            <Label
+                HorizontalOptions="Center"
+                Text="Hello Popup" />
+
+            <Entry
+                IsVisible="{Binding WantToReturn}"
+                Text="{Binding ReturnValue}"
+                Placeholder="Write return value" />
+            <Button
+                IsVisible="{Binding WantToReturn}"
+                Command="{Binding CloseCommand}"
+                Text="Close" />
+        </VerticalStackLayout>
+    </Grid>
+
+</views:MauiLoadingPopup>

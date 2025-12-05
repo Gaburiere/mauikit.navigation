@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<views:MauiPage
+    x:Class="mauikit.navigation.core.Views.MauiLoadingPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:views="clr-namespace:mauikit.navigation.core.Views"
+    xmlns:classes="clr-namespace:mauikit.navigation.core.Classes"
+    x:Name="LoadingMauiPageName"
+    ControlTemplate="{StaticResource LoadingTemplate}">
+    <views:MauiPage.Resources>
+        <ResourceDictionary>
+            <ControlTemplate x:Key="LoadingTemplate" x:DataType="classes:MauiViewModel">
+                <Grid>
+                    <ContentPresenter />
+
+                    <Grid
+                        x:Name="LoadingOverlay"
+                        BackgroundColor="#80000000"
+                        HorizontalOptions="Fill"
+                        IsVisible="{Binding Source={x:Static RelativeBindingSource.TemplatedParent}, Path=BindingContext.IsBusy, x:DataType=classes:MauiViewModel}"
+                        VerticalOptions="Fill">
+                        <Grid.GestureRecognizers>
+                            <TapGestureRecognizer />
+                            <!--  senza di questo resta cliccabile il ContentPresenter  -->
+                        </Grid.GestureRecognizers>
+
+                        <ActivityIndicator
+                            HorizontalOptions="Center"
+                            IsRunning="True"
+                            VerticalOptions="Center"
+                            Color="{Binding x:DataType=views:MauiLoadingPage, Source={x:Reference LoadingMauiPageName}, Path=LoaderColor}" />
+                    </Grid>
+                </Grid>
+            </ControlTemplate>
+        </ResourceDictionary>
+    </views:MauiPage.Resources>
+</views:MauiPage>

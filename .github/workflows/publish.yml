@@ -1,0 +1,185 @@
+name: MAUI Multi-Platform Build
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+  workflow_dispatch:
+  
+env:
+  NET_VERSION: '10.0.x'
+  NET_VERSION_STRING: '10'
+  TARGET_FRAMEWORK: 'net10.0'
+  TARGET_FRAMEWORK_IOS: 'net10.0-ios'
+  TARGET_FRAMEWORK_ANDROID: 'net10.0-android'
+  TARGET_FRAMEWORK_WINDOWS: 'net10.0-windows10.0.19041.0'
+  CSPROJ_PATH: 'mauikit.navigation/mauikit.navigation.core/mauikit.navigation.core.csproj'
+  PROJECT_PATH: 'mauikit.navigation/mauikit.navigation.core'
+  PACKAGE_ID: 'mauikit.navigation'
+  
+jobs:
+  ios:
+    name: Build iOS
+    runs-on: macos-15
+    
+    steps:
+
+      - name: Echo workflow parameters
+        run: echo ${{ github.event.inputs.environment }}
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Necessario per GitVersion
+      
+      - name: Setup GitVersion
+        uses: gittools/actions/gitversion/setup@v0.10.2
+        with:
+          versionSpec: '5.x'
+      
+      - name: Determine Version
+        id: gitversion
+        uses: gittools/actions/gitversion/execute@v0.10.2
+      
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.NET_VERSION }}
+      
+      - name: Install MAUI iOS workload
+        run: dotnet workload install maui-ios maui-android
+      
+      - name: Restore dependencies
+        run: dotnet restore ${{ env.CSPROJ_PATH }}
+      
+      - name: Run Unit Tests
+        if: ${{ env.TEST_PROJECTS != '' }}
+        run: dotnet test ${{ env.TEST_PROJECTS }}
+        env:
+          TEST_PROJECTS: ''  # Aggiungi i tuoi progetti di test separati da spazio
+      
+      - name: Build iOS
+        run: |
+          dotnet build ${{ env.CSPROJ_PATH }} \
+            -c Release \
+            -f ${{ env.TARGET_FRAMEWORK_IOS }} \
+            --no-restore \
+            -o ${{ github.workspace }}/artifacts/${{ env.TARGET_FRAMEWORK_IOS }}
+      
+      - name: Upload iOS artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.TARGET_FRAMEWORK_IOS }}
+          path: ${{ github.workspace }}/artifacts/${{ env.TARGET_FRAMEWORK_IOS }}
+          retention-days: 7
+
+  android-windows:
+    name: Build Android and Windows
+    runs-on: windows-2025
+    needs: ios
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - name: Setup GitVersion
+        uses: gittools/actions/gitversion/setup@v0.10.2
+        with:
+          versionSpec: '5.x'
+      
+      - name: Determine Version
+        id: gitversion
+        uses: gittools/actions/gitversion/execute@v0.10.2
+      
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.NET_VERSION }}
+      
+      - name: Download iOS artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ env.TARGET_FRAMEWORK_IOS }}
+          path: ${{ github.workspace }}/downloaded-artifacts/${{ env.TARGET_FRAMEWORK_IOS }}
+      
+      - name: Move iOS artifact to merge folder
+        shell: bash
+        run: |
+          mkdir -p "${{ github.workspace }}/${{ env.PROJECT_PATH }}/bin/Release/${{ env.TARGET_FRAMEWORK_IOS }}"
+          cp -r "${{ github.workspace }}/downloaded-artifacts/${{ env.TARGET_FRAMEWORK_IOS }}/"* "${{ github.workspace }}/${{ env.PROJECT_PATH }}/bin/Release/${{ env.TARGET_FRAMEWORK_IOS }}/"
+          ls -la "${{ github.workspace }}/${{ env.PROJECT_PATH }}/bin/Release/${{ env.TARGET_FRAMEWORK_IOS }}/"
+      
+      - name: Install MAUI workloads
+        run: dotnet workload install maui-android maui
+      
+      - name: Restore dependencies
+        run: dotnet restore ${{ env.CSPROJ_PATH }}
+      
+      - name: Build Android
+        run: |
+          dotnet build ${{ env.CSPROJ_PATH }} `
+            -c Release `
+            -f ${{ env.TARGET_FRAMEWORK_ANDROID }} `
+            --no-restore
+      
+      - name: Build Windows
+        run: |
+          dotnet build ${{ env.CSPROJ_PATH }} `
+            -c Release `
+            -f ${{ env.TARGET_FRAMEWORK_WINDOWS }} `
+            --no-restore
+      
+      - name: Build Base Framework
+        run: |
+          dotnet build ${{ env.CSPROJ_PATH }} `
+            -c Release `
+            -f ${{ env.TARGET_FRAMEWORK }} `
+            --no-restore
+      
+      - name: Pack NuGet package
+        run: |
+          New-Item -ItemType Directory -Force -Path "${{ github.workspace }}/nupkg"
+          dotnet pack ${{ env.CSPROJ_PATH }} `
+            -c Release `
+            -o "${{ github.workspace }}/nupkg" `
+            --no-build `
+            --no-restore `
+            -p:PackageVersion=${{ steps.gitversion.outputs.fullSemVer }} `
+            -p:PackageId=${{ env.PACKAGE_ID }}
+      
+      - name: Upload NuGet package
+        uses: actions/upload-artifact@v4
+        with:
+          name: nuget-package
+          path: ${{ github.workspace }}/nupkg/*.nupkg
+          retention-days: 30
+
+      - name: Determine if should push
+        id: should-push
+        shell: bash
+        run: |
+          # Default: false
+          SHOULD_PUSH="false"
+          
+          if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+            SHOULD_PUSH="${{ inputs.should-push-packages }}"
+          # Se push su main, pusha automaticamente
+          elif [ "${{ github.event_name }}" == "push" ] && [ "${{ github.ref }}" == "refs/heads/main" ]; then
+            SHOULD_PUSH="false"
+          # Se push su develop, NON pushare (o pusha se preferisci)
+          elif [ "${{ github.event_name }}" == "push" ] && [ "${{ github.ref }}" == "refs/heads/develop" ]; then
+            SHOULD_PUSH="false"
+          fi
+          
+          echo "should-push=$SHOULD_PUSH" >> $GITHUB_OUTPUT
+          echo "Will push packages: $SHOULD_PUSH"
+      
+      - name: Push to GitHub Packages
+        if: steps.should-push.outputs.should-push == 'true'
+        run: |
+          dotnet nuget push "${{ github.workspace }}/nupkg/*.nupkg" `
+            --source "https://api.nuget.org/v3/index.json" `
+            --api-key ${{ secrets.NUGET_API_KEY }} `
+            --skip-duplicate

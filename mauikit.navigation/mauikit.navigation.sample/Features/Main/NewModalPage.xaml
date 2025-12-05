@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<views:MauiPage
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:views="clr-namespace:mauikit.navigation.core.Views;assembly=mauikit.navigation.core"
+    xmlns:main="clr-namespace:mauikit.navigation.sample.Features.Main"
+    xmlns:main1="clr-namespace:mauikit.navigation.sample.Features.Main"
+    Shell.PresentationMode="ModalAnimated"
+    x:DataType="main1:NewModalViewModel"
+    x:Class="mauikit.navigation.sample.Features.Main.NewModalPage">
+    
+    <Grid
+        Margin="10"
+        RowDefinitions="*, Auto"
+        >
+        <VerticalStackLayout
+            Spacing="10"
+            Grid.Row="0"
+            VerticalOptions="Center"
+        >
+        <Label
+            HorizontalOptions="Center"
+            Text="i'm a modal page"/>
+        <Label
+            HorizontalOptions="Center">
+            <Label.FormattedText>
+                <FormattedString>
+                    <Span Text="Parameter received: "/>
+                    <Span Text="{Binding DataReceived}"/>
+                </FormattedString>
+            </Label.FormattedText>
+        </Label>
+        
+        <Entry
+            Text="{Binding DataToSendBack}"
+            Placeholder="Insert here data to send back"
+            />
+        </VerticalStackLayout>
+    <Button
+        Grid.Row="1"
+        Text="Close"
+        Command="{Binding CloseCommand}"
+        />
+    
+    </Grid>
+    
+    
+</views:MauiPage>

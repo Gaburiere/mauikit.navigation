@@ -17,8 +17,7 @@ env:
   CSPROJ_PATH: 'mauikit.navigation/mauikit.navigation.core/mauikit.navigation.core.csproj'
   PROJECT_PATH: 'mauikit.navigation/mauikit.navigation.core'
   PACKAGE_ID: 'mauikit.navigation'
-  SHOULD_PUSH_PACKAGE: 'false'
-
+  
 jobs:
   ios:
     name: Build iOS
@@ -156,11 +155,31 @@ jobs:
           name: nuget-package
           path: ${{ github.workspace }}/nupkg/*.nupkg
           retention-days: 30
+
+      - name: Determine if should push
+        id: should-push
+        shell: bash
+        run: |
+          # Default: false
+          SHOULD_PUSH="false"
+          
+          if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+            SHOULD_PUSH="${{ inputs.should-push-packages }}"
+          # Se push su main, pusha automaticamente
+          elif [ "${{ github.event_name }}" == "push" ] && [ "${{ github.ref }}" == "refs/heads/main" ]; then
+            SHOULD_PUSH="false"
+          # Se push su develop, NON pushare (o pusha se preferisci)
+          elif [ "${{ github.event_name }}" == "push" ] && [ "${{ github.ref }}" == "refs/heads/develop" ]; then
+            SHOULD_PUSH="false"
+          fi
+          
+          echo "should-push=$SHOULD_PUSH" >> $GITHUB_OUTPUT
+          echo "Will push packages: $SHOULD_PUSH"
       
       - name: Push to GitHub Packages
-        if: ${{ env.SHOULD_PUSH_PACKAGE == 'true' && github.event_name != 'pull_request' }}
+        if: steps.should-push.outputs.should-push == 'true'
         run: |
           dotnet nuget push "${{ github.workspace }}/nupkg/*.nupkg" `
-            --source "https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json" `
-            --api-key ${{ secrets.GITHUB_TOKEN }} `
+            --source "https://api.nuget.org/v3/index.json" `
+            --api-key ${{ secrets.NUGET_API_KEY }} `
             --skip-duplicate

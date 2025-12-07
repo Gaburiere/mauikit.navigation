@@ -184,10 +184,105 @@ jobs:
           echo "should-push=$SHOULD_PUSH" >> $GITHUB_OUTPUT
           echo "Will push packages: $SHOULD_PUSH"
       
-      - name: Push to GitHub Packages
+      - name: Diagnose and Push to NuGet.org
         if: steps.should-push.outputs.should-push == 'true'
+        shell: pwsh
         run: |
-          dotnet nuget push "${{ github.workspace }}\nupkg\*.nupkg" `
-            --source "https://api.nuget.org/v3/index.json" `
-            --api-key ${{ secrets.NUGET_API_KEY }} `
-            --skip-duplicate
+          $packageId = "${{ env.PACKAGE_ID }}"
+          $version = "${{ steps.gitversion.outputs.fullSemVer }}"
+          $nupkgPath = Join-Path "${{ github.workspace }}" "nupkg"
+          
+          Write-Host "════════════════════════════════════════════════"
+          Write-Host "🔍 NUGET PACKAGE DIAGNOSTICS"
+          Write-Host "════════════════════════════════════════════════"
+          Write-Host "Package ID: $packageId"
+          Write-Host "Version: $version"
+          Write-Host ""
+          
+          # 1. Verifica esistenza su NuGet.org
+          Write-Host "📋 Step 1: Checking if package exists on NuGet.org..."
+          try {
+            $url = "https://api.nuget.org/v3-flatcontainer/$($packageId.ToLower())/index.json"
+            $response = Invoke-RestMethod -Uri $url -ErrorAction Stop
+            $existingVersions = $response.versions
+            
+            Write-Host "✅ Package exists with $($existingVersions.Count) versions:"
+            $existingVersions | ForEach-Object { Write-Host "   - $_" }
+            
+            if ($existingVersions -contains $version) {
+              Write-Host ""
+              Write-Host "⚠️  WARNING: Version $version already exists!" -ForegroundColor Yellow
+              Write-Host "🔗 View it at: https://www.nuget.org/packages/$packageId/$version"
+              Write-Host "💡 You need to increment the version to publish a new package"
+              exit 0  # Non è un errore, semplicemente esiste già
+            }
+          }
+          catch {
+            Write-Host "ℹ️  Package not yet published (this is normal for first publish)" -ForegroundColor Cyan
+          }
+          
+          Write-Host ""
+          Write-Host "📋 Step 2: Verifying local package..."
+          $packages = Get-ChildItem $nupkgPath -Filter *.nupkg
+          
+          if ($packages.Count -eq 0) {
+            Write-Error "❌ No .nupkg files found in $nupkgPath"
+            exit 1
+          }
+          
+          Write-Host "✅ Found $($packages.Count) package(s) to push"
+          
+          # 2. Push del package
+          Write-Host ""
+          Write-Host "📋 Step 3: Pushing to NuGet.org..."
+          
+          foreach ($pkg in $packages) {
+            Write-Host ""
+            Write-Host "📦 Pushing: $($pkg.Name)"
+            Write-Host "   Size: $([math]::Round($pkg.Length / 1MB, 2)) MB"
+            
+            # Cattura tutto l'output
+            $pushOutput = dotnet nuget push $pkg.FullName `
+              --source "https://api.nuget.org/v3/index.json" `
+              --api-key ${{ secrets.NUGET_API_KEY }} `
+              --skip-duplicate `
+              --timeout 300 2>&1 | Out-String
+            
+            $exitCode = $LASTEXITCODE
+            
+            Write-Host $pushOutput
+            
+            # Analisi del risultato
+            if ($exitCode -eq 0) {
+              if ($pushOutput -match "already exists|Conflict") {
+                Write-Host ""
+                Write-Host "═══════════════════════════════════════" -ForegroundColor Yellow
+                Write-Host "⚠️  PACKAGE CONFLICT DETECTED" -ForegroundColor Yellow
+                Write-Host "═══════════════════════════════════════" -ForegroundColor Yellow
+                Write-Host ""
+                Write-Host "Possible reasons:" -ForegroundColor Yellow
+                Write-Host "1. 🕐 Package was just uploaded and is in validation (wait 10-15 min)"
+                Write-Host "2. 🗑️  Package was deleted recently (soft-delete, wait 24-48 hours)"
+                Write-Host "3. 📌 Version $version already exists (increment version)"
+                Write-Host ""
+                Write-Host "🔗 Check: https://www.nuget.org/packages/$packageId"
+                Write-Host "📧 If issue persists: https://www.nuget.org/policies/Contact"
+              }
+              else {
+                Write-Host ""
+                Write-Host "✅ Successfully pushed!" -ForegroundColor Green
+                Write-Host "🔗 View at: https://www.nuget.org/packages/$packageId/$version"
+                Write-Host "⏳ Note: May take 10-15 minutes to appear in search"
+              }
+            }
+            else {
+              Write-Host ""
+              Write-Error "❌ Push failed with exit code: $exitCode"
+              exit 1
+            }
+          }
+          
+          Write-Host ""
+          Write-Host "════════════════════════════════════════════════"
+          Write-Host "✅ PUSH OPERATION COMPLETED"
+          Write-Host "════════════════════════════════════════════════"

@@ -6,6 +6,15 @@ on:
   pull_request:
     branches: [ main, develop ]
   workflow_dispatch:
+    inputs:
+      should-push-packages:
+        description: 'Push package to NuGet.org feed'
+        required: false
+        default: 'false'
+        type: choice
+        options:
+          - 'true'
+          - 'false'
   
 env:
   NET_VERSION: '10.0.x'
@@ -26,7 +35,9 @@ jobs:
     steps:
 
       - name: Echo workflow parameters
-        run: echo ${{ github.event.inputs.environment }}
+        run: |
+          echo "Triggered by: ${{ github.event_name }}"
+          echo "Should push (manual): ${{ inputs.should-push-packages }}"
       - name: Checkout code
         uses: actions/checkout@v4
         with:
@@ -160,15 +171,12 @@ jobs:
         id: should-push
         shell: bash
         run: |
-          # Default: false
           SHOULD_PUSH="false"
           
           if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
             SHOULD_PUSH="${{ inputs.should-push-packages }}"
-          # Se push su main, pusha automaticamente
           elif [ "${{ github.event_name }}" == "push" ] && [ "${{ github.ref }}" == "refs/heads/main" ]; then
             SHOULD_PUSH="false"
-          # Se push su develop, NON pushare (o pusha se preferisci)
           elif [ "${{ github.event_name }}" == "push" ] && [ "${{ github.ref }}" == "refs/heads/develop" ]; then
             SHOULD_PUSH="false"
           fi

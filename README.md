@@ -1,4 +1,4 @@
-# mauikit.navigation
+# Navigation.MauiKit
 
 A powerful MVVM navigation library for .NET MAUI that simplifies page navigation, popup management, and provides a clean separation of concerns for your mobile applications.
 
@@ -21,12 +21,12 @@ A powerful MVVM navigation library for .NET MAUI that simplifies page navigation
 ## Installation
 
 ```bash
-dotnet add package mauikit.navigation
+dotnet add package Navigation.MauiKit
 ```
 
 Or via NuGet Package Manager:
 ```
-Install-Package mauikit.navigation
+Install-Package Navigation.MauiKit
 ```
 
 ## Quick Start

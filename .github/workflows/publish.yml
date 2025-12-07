@@ -181,7 +181,4 @@ jobs:
         if: steps.should-push.outputs.should-push == 'true'
         shell: pwsh
         run: |
-          dotnet nuget push "${{ github.workspace }}\nupkg\*.nupkg"
-            --source "https://api.nuget.org/v3/index.json" `
-            --api-key ${{ secrets.NUGET_API_KEY }} `
-            --skip-duplicate
+          dotnet nuget push "${{ github.workspace }}\nupkg\*.nupkg" --source "https://api.nuget.org/v3/index.json" --api-key ${{ secrets.NUGET_API_KEY }} --skip-duplicate

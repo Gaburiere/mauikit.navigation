@@ -25,7 +25,7 @@ env:
   TARGET_FRAMEWORK_WINDOWS: 'net10.0-windows10.0.19041.0'
   CSPROJ_PATH: 'mauikit.navigation/mauikit.navigation.core/mauikit.navigation.core.csproj'
   PROJECT_PATH: 'mauikit.navigation/mauikit.navigation.core'
-  PACKAGE_ID: 'Core.MauiKit'
+  PACKAGE_ID: 'Navigation.MauiKit'
   
 jobs:
   ios:

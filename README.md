@@ -9,7 +9,6 @@ A powerful MVVM navigation library for .NET MAUI that simplifies page navigation
 
 ## Features
 
-- 🚀 **Type-safe Navigation** - Navigate between pages using strongly-typed generic methods
 - 🎯 **Parameter Passing** - Pass data between pages seamlessly with navigation lifecycle hooks
 - 📱 **Popup Management** - Display and manage popups with return values using CommunityToolkit.Maui
 - 🔄 **Lifecycle Hooks** - `OnNavigatedTo` and `OnNavigatedBack` callbacks for handling navigation events

@@ -49,11 +49,32 @@ public static class ServiceCollectionExtension
         this MauiAppBuilder builder,
         ResourceManager managerProvider)
     {
-		ArgumentNullException.ThrowIfNull(managerProvider);
-        builder.Services.AddSingleton(new Localizator(managerProvider));
+        ArgumentNullException.ThrowIfNull(managerProvider);
+        builder.Services.AddSingleton(new Localizator(new ResourceManagerProviderWrapper(managerProvider)));
         return builder;
     }
 
+    /// <summary>
+    /// Registers a <see cref="Localizator"/> service in the dependency injection container using a custom localization provider,
+    /// for example if you need to fetch localizations from a local database 
+    /// </summary>
+    /// <param name="builder">The <see cref="MauiAppBuilder"/> instance to extend.</param>
+    /// <param name="localizationProvider">The custom <see cref="ILocalizationProvider"/> providing localized resources.</param>
+    /// <returns>The same <see cref="MauiAppBuilder"/> instance for chaining.</returns>
+    /// <remarks>
+    /// <para>Example:</para>
+    /// <code>
+    /// builder.UseLocalizationProvider(new CustomILocalizationProviderInstance());
+    /// </code>
+    /// </remarks>
+    public static MauiAppBuilder UseLocalizationProvider(
+        this MauiAppBuilder builder,
+        ILocalizationProvider localizationProvider)
+    {
+        ArgumentNullException.ThrowIfNull(localizationProvider);
+        builder.Services.AddSingleton(new Localizator(localizationProvider));
+        return builder;
+    }
 
 }
 

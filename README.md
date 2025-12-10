@@ -51,6 +51,8 @@ public static class MauiProgram
 
         // Optional: Add localization support
         builder.UseLocalizationProvider(AppResources.ResourceManager);
+        ...
+        builder.UseLocalizationProvider(new YourCustomILocalizationProvider());
 
         // Register your pages and view models
         builder.Services.AddTransientWithShellRoute<MainPage, MainViewModel>(nameof(MainPage));

@@ -15,8 +15,9 @@ public class LocalizatorTests
         // Arrange
         var resourceManager = Substitute.For<ResourceManager>();
         resourceManager.GetObject("Hello", Arg.Any<CultureInfo>()).Returns("Ciao!");
+        var provider = Substitute.For<ResourceManagerProviderWrapper>(resourceManager);
 
-        var sut = new Localizator(resourceManager);
+        var sut = new Localizator(provider);
 
         // Act
         var result = sut["Hello"];
@@ -31,8 +32,9 @@ public class LocalizatorTests
         // Arrange
         var resourceManager = Substitute.For<ResourceManager>();
         resourceManager.GetObject("MissingKey", Arg.Any<CultureInfo>()).Returns((object?)null);
+        var provider = Substitute.For<ResourceManagerProviderWrapper>(resourceManager);
 
-        var sut = new Localizator(resourceManager);
+        var sut = new Localizator(provider);
 
         // Act
         var result = sut["MissingKey"];
@@ -45,7 +47,9 @@ public class LocalizatorTests
     public void SettingCulture_ShouldUpdateGlobalCulture()
     {
         // Arrange
-        var sut = new Localizator(Substitute.For<ResourceManager>());
+        var resourceManager = Substitute.For<ResourceManager>();
+        var provider = Substitute.For<ResourceManagerProviderWrapper>(resourceManager);
+        var sut = new Localizator(provider);
         var newCulture = new CultureInfo("fr-FR");
 
         // Act
@@ -60,7 +64,9 @@ public class LocalizatorTests
     public void SettingCulture_ShouldRaisePropertyChanged()
     {
         // Arrange
-        var sut = new Localizator(Substitute.For<ResourceManager>());
+        var resourceManager = Substitute.For<ResourceManager>();
+        var provider = Substitute.For<ResourceManagerProviderWrapper>(resourceManager);
+        var sut = new Localizator(provider);
         bool eventRaised = false;
         sut.PropertyChanged += (_, __) => eventRaised = true;
 

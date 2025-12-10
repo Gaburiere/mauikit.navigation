@@ -33,7 +33,7 @@ public class ServiceCollectionExtensionTests
         var builder = MauiApp.CreateBuilder();
 
         // Act // Assert
-		Assert.Throws<ArgumentNullException>(() => builder.UseLocalizationProvider(null));
+		Assert.Throws<ArgumentNullException>(() => builder.UseLocalizationProvider(managerProvider:null));
     }
 
     [Fact]
@@ -45,6 +45,19 @@ public class ServiceCollectionExtensionTests
         // Act
         var sp = builder.UseLocalizationProvider(Substitute.For<ResourceManager>()).Services.BuildServiceProvider();
         
+        // Assert
+        _ = sp.GetRequiredService<Localizator>();
+    }
+
+    [Fact]
+    public void IServiceCollection_VerifySingleton_UseLocalizationProviderCustom()
+    {
+        // Arrange
+        var builder = MauiApp.CreateBuilder();
+
+        // Act
+        var sp = builder.UseLocalizationProvider(Substitute.For<ILocalizationProvider>()).Services.BuildServiceProvider();
+
         // Assert
         _ = sp.GetRequiredService<Localizator>();
     }

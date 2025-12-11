@@ -21,7 +21,6 @@
                         VerticalOptions="Fill">
                         <Grid.GestureRecognizers>
                             <TapGestureRecognizer />
-                            <!--  senza di questo resta cliccabile il ContentPresenter  -->
                         </Grid.GestureRecognizers>
 
                         <ActivityIndicator

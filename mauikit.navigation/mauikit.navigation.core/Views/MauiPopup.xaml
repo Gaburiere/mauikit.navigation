@@ -9,14 +9,14 @@
     x:Name="MauiPopupName"
     x:DataType="interfaces:IMauiPopupViewModel">
     
-    <ContentPage.Behaviors>
+    <toolkit:Popup.Behaviors>
         <toolkit:EventToCommandBehavior
-            BindingContext="{Binding BindingContext, Source={x:Reference MauiPopupName}, x:DataType=ContentPage}"
+            BindingContext="{Binding BindingContext, Source={x:Reference MauiPopupName}, x:DataType=toolkit:Popup}"
             Command="{Binding OpenedCommand}"
             EventName="Opened" />
         <toolkit:EventToCommandBehavior
-            BindingContext="{Binding BindingContext, Source={x:Reference MauiPopupName}, x:DataType=ContentPage}"
+            BindingContext="{Binding BindingContext, Source={x:Reference MauiPopupName}, x:DataType=toolkit:Popup}"
             Command="{Binding ClosedCommand}"
             EventName="Closed" />
-    </ContentPage.Behaviors>
+    </toolkit:Popup.Behaviors>
 </toolkit:Popup>

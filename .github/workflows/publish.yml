@@ -159,13 +159,6 @@ jobs:
             --no-restore `
             -p:PackageVersion=${{ steps.gitversion.outputs.fullSemVer }} `
             -p:PackageId=${{ env.PACKAGE_ID }}
-      
-      - name: Upload NuGet package
-        uses: actions/upload-artifact@v4
-        with:
-          name: nuget-package
-          path: ${{ github.workspace }}/nupkg/*.nupkg
-          retention-days: 30
 
       - name: Determine if should push
         id: should-push
@@ -184,14 +177,8 @@ jobs:
           echo "should-push=$SHOULD_PUSH" >> $GITHUB_OUTPUT
           echo "Will push packages: $SHOULD_PUSH"
       
-      - name: Diagnose and Push to NuGet.org
+      - name: Push to NuGet.org
         if: steps.should-push.outputs.should-push == 'true'
         shell: pwsh
         run: |
-          $packageId = "${{ env.PACKAGE_ID }}"
-          $version = "${{ steps.gitversion.outputs.fullSemVer }}"
-          $nupkgPath = Join-Path "${{ github.workspace }}" "nupkg"
-          dotnet nuget push $pkg.FullName `
-            --source "https://api.nuget.org/v3/index.json" `
-            --api-key ${{ secrets.NUGET_API_KEY }} `
-            --skip-duplicate `
+          dotnet nuget push "${{ github.workspace }}\nupkg\*.nupkg" --source "https://api.nuget.org/v3/index.json" --api-key ${{ secrets.NUGET_API_KEY }} --skip-duplicate

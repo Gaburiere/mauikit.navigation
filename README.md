@@ -3,13 +3,12 @@
 A powerful MVVM navigation library for .NET MAUI that simplifies page navigation, popup management, and provides a clean separation of concerns for your mobile applications.
 
 [![MAUI Multi-Platform Build](https://github.com/Gaburiere/mauikit.navigation/actions/workflows/publish.yml/badge.svg)](https://github.com/Gaburiere/mauikit.navigation/actions/workflows/publish.yml)
-![NuGet Version](https://img.shields.io/nuget/vpre/Navigation.MauiKit)
+[![NuGet Version](https://img.shields.io/nuget/vpre/Navigation.MauiKit)](https://www.nuget.org/packages/Navigation.MauiKit/)
 ![NuGet Downloads](https://img.shields.io/nuget/dt/Navigation.MauiKit)
 
 
 ## Features
 
-- 🚀 **Type-safe Navigation** - Navigate between pages using strongly-typed generic methods
 - 🎯 **Parameter Passing** - Pass data between pages seamlessly with navigation lifecycle hooks
 - 📱 **Popup Management** - Display and manage popups with return values using CommunityToolkit.Maui
 - 🔄 **Lifecycle Hooks** - `OnNavigatedTo` and `OnNavigatedBack` callbacks for handling navigation events

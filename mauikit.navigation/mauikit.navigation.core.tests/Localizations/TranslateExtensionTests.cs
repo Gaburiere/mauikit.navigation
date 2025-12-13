@@ -13,7 +13,8 @@ public class TranslateExtensionTests : BaseViewTest
         var fakeRm = Substitute.For<ResourceManager>();
         fakeRm.GetObject("Hello", Arg.Any<CultureInfo>()).Returns("Ciao!");
         fakeRm.GetObject("Goodbye", Arg.Any<CultureInfo>()).Returns("Addio!");
-        sc.AddSingleton(new Localizator(fakeRm));
+        var provider = Substitute.For<ResourceManagerProviderWrapper>(fakeRm);
+        sc.AddSingleton(new Localizator(provider));
     }
 
     [Fact]

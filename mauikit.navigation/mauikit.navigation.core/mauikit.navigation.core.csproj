@@ -33,6 +33,7 @@
 
     <ItemGroup>
         <InternalsVisibleTo Include="mauikit.navigation.core.tests" />
-    </ItemGroup>
+		<InternalsVisibleTo Include="DynamicProxyGenAssembly2" /> <!--Needed by NSubstitute-->
+	</ItemGroup>
 
 </Project>

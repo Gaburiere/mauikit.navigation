@@ -16,7 +16,9 @@ public static class MauiProgram
             .UseMauiCommunityToolkit()
             .UseMauiApp<App>()
             .UseMauiKitNavigation()
-            .UseLocalizationProvider(AppResources.ResourceManager)
+            .UseLocalizationProvider(new CustomLocalizationProvider())
+            // OR use standard RESX
+            // .UseLocalizationProvider(AppResources.ResourceManager)
             .ConfigureFonts(fonts =>
             {
                 fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");

@@ -11,9 +11,14 @@ namespace mauikit.navigation.core.Localizations;
 /// This class acts as a localization helper that retrieves translated strings
 /// from a <see cref="ResourceManager"/> and notifies the UI when the culture changes.
 /// </remarks>
-public partial class Localizator(ResourceManager resourceManagerProvider) : INotifyPropertyChanged
+public partial class Localizator : INotifyPropertyChanged
 {
-    private readonly ResourceManager _resourceManagerProvider = resourceManagerProvider;
+    private readonly ILocalizationProvider localizationProvider;
+
+    internal Localizator(ILocalizationProvider localizationProvider)
+    {
+        this.localizationProvider = localizationProvider;
+    }
 
     /// <summary>
     /// Gets or sets the current culture used for localization.
@@ -38,7 +43,7 @@ public partial class Localizator(ResourceManager resourceManagerProvider) : INot
     /// The localized string if found; otherwise, returns the key itself.
     /// </returns>
     public string this[string resourceKey]
-        => _resourceManagerProvider.GetObject(resourceKey, Culture)?.ToString() ?? resourceKey;
+        => localizationProvider.GetText(resourceKey, Culture) ?? resourceKey;
 
     /// <summary>
     /// Occurs when a property value changes, typically after updating the <see cref="Culture"/>.
